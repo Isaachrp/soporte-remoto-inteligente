@@ -1,31 +1,60 @@
-# soporte-remoto-inteligente
-Herramienta para hacer configuraciones y soportes repetitivos en dispositivos mikrotik cliente  
-# 1. Definición del problema
+# Soporte Remoto Inteligente y Automatizado
 
-## Problema
+Sistema de soporte remoto orientado a agilizar y automatizar procedimientos técnicos repetitivos en equipos MikroTik de clientes.
 
-El soporte técnico remoto en equipos MikroTik de clientes requiere actualmente la intervención manual del técnico para realizar procedimientos que pueden ser repetitivos. Esto puede consumir tiempo cuando es necesario atender problemas similares en diferentes clientes.
-
-## Usuario
-
-El sistema será utilizado principalmente por técnicos encargados de brindar soporte remoto a clientes que utilizan equipos MikroTik.
-
-## Entorno
-
-Los técnicos utilizarán AnyDesk como medio de acceso remoto al equipo del cliente, donde se realizarán las acciones correspondientes de soporte técnico.
+El sistema utilizará inteligencia artificial para interpretar las solicitudes del técnico y determinar el procedimiento correspondiente. Un agente local será responsable de ejecutar acciones autorizadas en el equipo Windows utilizado para proporcionar el soporte remoto.
 
 ## Objetivo
 
-Agilizar y automatizar procedimientos técnicos repetitivos en equipos MikroTik mediante un sistema inteligente que asista al técnico durante las tareas de soporte remoto.
+Desarrollar un sistema inteligente capaz de asistir y automatizar procedimientos de soporte técnico sobre equipos MikroTik, reduciendo las tareas manuales y repetitivas realizadas actualmente por los técnicos.
 
-## Casos de uso
+El sistema utilizará procedimientos y scripts previamente definidos, manteniendo supervisión humana sobre las acciones que puedan modificar la configuración de los equipos de los clientes.
 
-Los casos de uso específicos todavía están por definirse.
+## Componentes principales
 
-Como posible caso de uso inicial se contempla el diagnóstico y soporte relacionado con el balanceo de carga en equipos MikroTik.
+El sistema contempla los siguientes componentes:
 
-Otros problemas comunes de MikroTik serán identificados y seleccionados posteriormente para determinar el alcance del proyecto.
+- **AnyDesk:** acceso remoto al equipo del cliente.
+- **Agente local:** ejecución de acciones autorizadas en Windows y recopilación de información.
+- **Inteligencia artificial:** interpretación de solicitudes y selección del procedimiento correspondiente.
+- **Automatización:** ejecución de tareas repetitivas necesarias para realizar los procedimientos.
+- **Base de conocimiento:** almacenamiento de procedimientos, scripts, parámetros, manuales y soluciones.
+- **Registro y auditoría:** almacenamiento de las acciones realizadas y sus resultados.
+- **Aprobación humana:** supervisión y autorización de acciones sensibles.
 
-## Nivel de automatización
+## MVP
 
-El nivel de automatización todavía está por definirse.
+La primera versión del sistema contempla tres procedimientos de configuración para equipos MikroTik:
+
+1. ECMP — Balanceo ECMP.
+2. PCC — Balanceo PCC.
+3. Hotspot.
+
+El sistema utilizará scripts y procedimientos previamente establecidos para estos casos.
+
+## Flujo general
+
+```text
+Técnico
+   ↓
+Solicitud
+   ↓
+IA
+   ↓
+Identificación del procedimiento
+   ↓
+Base de conocimiento
+   ↓
+Procedimiento / Script
+   ↓
+Agente local
+   ↓
+Equipo del cliente
+   ↓
+WinBox
+   ↓
+MikroTik
+   ↓
+Verificación
+   ↓
+Registro / Auditoría
