@@ -9,6 +9,11 @@ __pycache__/
 # Environment variables
 .env
 
+# Imported PHP system: local/sensitive configuration
+php/sistema-generador/**/.env
+php/sistema-generador/config.php
+php/sistema-generador/pass.php
+
 # IDE
 .vscode/
 
@@ -19,3 +24,12 @@ htmlcov/
 
 # Logs
 *.log
+
+# MVP runtime and portable build outputs
+.venv-mvp/
+.venv-portable/
+*.sqlite3*
+dist/
+build/
+runtime/
+lab-local/

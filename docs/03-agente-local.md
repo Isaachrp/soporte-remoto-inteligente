@@ -8,20 +8,18 @@ El agente deberá actuar de acuerdo con procedimientos previamente definidos y n
 
 ## 2. Entorno de ejecución
 
-El agente local se ejecutará en un equipo con Windows.
+El agente local se distribuirá como una aplicación portátil para Windows. Se iniciará manualmente para cada sesión de soporte y no requerirá instalación, servicio residente ni autoarranque.
 
-En el procedimiento actual, este equipo corresponde a la computadora del cliente a la que el técnico accede mediante AnyDesk.
+Podrá ejecutarse en la computadora del cliente a la que el técnico accede mediante AnyDesk o en otro equipo autorizado con conectividad segura hacia el MikroTik y el servidor central.
 
-Desde este equipo se utiliza WinBox para establecer comunicación con el router MikroTik.
+En el flujo actual, el técnico utiliza WinBox. Para la automatización del MVP, el agente establecerá comunicación directa con el router mediante la API nativa de RouterOS, preferentemente a través de `api-ssl`.
 
 ## 3. Responsabilidades
 
 Inicialmente, el agente deberá poder realizar las siguientes funciones:
 
-* Detectar y utilizar las aplicaciones necesarias para el procedimiento.
-* Abrir WinBox.
-* Interactuar con WinBox.
-* Establecer la conexión con el MikroTik utilizando los datos autorizados.
+* Establecer una sesión segura con la API de RouterOS utilizando los datos autorizados.
+* Validar el certificado y autenticar la cuenta de servicio.
 * Obtener información del router.
 * Ejecutar procedimientos previamente definidos.
 * Ejecutar el script correspondiente al procedimiento.
@@ -43,10 +41,10 @@ Para el procedimiento ECMP, el agente deberá poder realizar conceptualmente las
 
 ### Acceso
 
-1. Abrir WinBox.
-2. Introducir la información necesaria para conectarse al MikroTik.
-3. Establecer la conexión.
-4. Confirmar que la conexión se realizó correctamente.
+1. Comprobar la conectividad con el servicio `api-ssl` del MikroTik.
+2. Validar el certificado TLS.
+3. Autenticarse con la cuenta de servicio autorizada.
+4. Confirmar que la sesión con la API se realizó correctamente.
 
 ### Obtención de información
 
@@ -148,15 +146,19 @@ El agente local todavía no ha sido implementado.
 
 La tecnología y arquitectura específica que se utilizará para desarrollarlo serán determinadas en la etapa de diseño técnico.
 
+La modalidad de ejecución para el MVP ya está definida como portátil en [Modalidad de ejecución del agente](10-modalidad-agente.md).
+
 ## 10. Pendientes
 
 Se deberá definir:
 
 * Lenguaje de programación.
+* Formato de empaquetado portátil.
+* Mecanismo de firma o validación de integridad del paquete.
 * Forma de comunicación con el sistema principal.
-* Forma de comunicación con WinBox.
-* Forma de obtener información del MikroTik.
-* Forma de ejecutar los scripts.
+* Biblioteca cliente para la API de RouterOS.
+* Modelo exacto de operaciones permitidas para consultar y modificar el MikroTik.
+* Forma de ejecutar mediante la API las variantes autorizadas del procedimiento ECMP.
 * Sistema de permisos.
 * Manejo de credenciales.
 * Sistema de logs.

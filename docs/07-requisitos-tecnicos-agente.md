@@ -4,7 +4,7 @@
 
 Definir las capacidades y requisitos que deberá cumplir el agente local para participar en los procedimientos de soporte remoto.
 
-En esta etapa no se define todavía dónde se instalará el agente. La ubicación será determinada después de evaluar las diferentes alternativas de despliegue.
+Para el MVP, el agente será portátil y no se instalará de forma permanente. Podrá ejecutarse en un equipo Windows autorizado que tenga conectividad segura con el servidor central y el MikroTik.
 
 ## 2. Función principal
 
@@ -47,39 +47,31 @@ Inicialmente se consideran capacidades como:
 
 Las capacidades exactas dependerán del mecanismo de automatización seleccionado.
 
-## 5. Interacción con WinBox
+## 5. Interacción con la API de RouterOS
 
-Para el procedimiento ECMP, el agente deberá poder interactuar con WinBox.
+Para el procedimiento ECMP, el agente deberá interactuar con la API nativa de RouterOS mediante una conexión segura.
 
 Las capacidades requeridas son:
 
-1. Abrir WinBox.
-2. Introducir los datos necesarios para conectarse.
-3. Establecer la conexión.
-4. Detectar si la conexión fue exitosa.
+1. Comprobar la disponibilidad de `api-ssl`.
+2. Validar el certificado TLS del router.
+3. Autenticarse con una cuenta de servicio autorizada.
+4. Detectar si la sesión fue establecida correctamente.
 5. Ejecutar las acciones necesarias.
 6. Obtener información del MikroTik.
 7. Ejecutar el procedimiento autorizado.
 8. Obtener información después de la ejecución.
 9. Detectar errores.
 
-La tecnología utilizada para automatizar WinBox será definida posteriormente.
+La implementación deberá utilizar una biblioteca cliente compatible con la API nativa de RouterOS v6 y v7.
 
 ## 6. Interacción con MikroTik
 
-El agente deberá permitir ejecutar las operaciones necesarias sobre el MikroTik mediante el mecanismo de administración que finalmente se seleccione.
+El agente deberá ejecutar las operaciones necesarias sobre el MikroTik mediante la API nativa de RouterOS. El canal de producción será preferentemente `api-ssl` sobre TCP 8729.
 
-Inicialmente se considera WinBox como parte del flujo actual.
+WinBox y SSH no serán canales automatizados del MVP. Podrán utilizarse manualmente para preparación, diagnóstico o contingencia. REST API tampoco será el canal principal porque el alcance incluye RouterOS v6.
 
-Sin embargo, durante el diseño técnico deberán evaluarse otras alternativas de comunicación con MikroTik, por ejemplo:
-
-* API.
-* SSH.
-* WinBox.
-* VPN.
-* Otros mecanismos disponibles.
-
-La selección deberá considerar seguridad, estabilidad, facilidad de automatización y compatibilidad con el procedimiento.
+Los requisitos completos se definen en [Selección del canal de comunicación con MikroTik](09-canal-comunicacion-mikrotik.md).
 
 ## 7. Ejecución de procedimientos
 
@@ -223,7 +215,8 @@ El agente deberá detectar y reportar errores.
 Ejemplos:
 
 ```text
-No se pudo abrir WinBox.
+El servicio api-ssl no está disponible.
+No se pudo validar el certificado del MikroTik.
 No se pudo conectar al MikroTik.
 Credenciales inválidas.
 No se encontró la interfaz esperada.
@@ -271,8 +264,9 @@ Ejemplos:
 Agente iniciado.
 Agente conectado al servidor.
 Operación recibida.
-WinBox iniciado.
-Conexión al MikroTik establecida.
+Sesión api-ssl iniciada.
+Identidad del MikroTik validada.
+Conexión autenticada con el MikroTik.
 Información obtenida.
 Procedimiento autorizado.
 Script ejecutado.
@@ -303,27 +297,28 @@ Inicialmente se deberá considerar compatibilidad con:
 
 * Windows utilizado actualmente por los técnicos y clientes.
 * Versiones de WinBox utilizadas por el equipo.
-* Versiones de RouterOS contempladas por los procedimientos.
+* RouterOS v6 para el procedimiento ECMP.
+* RouterOS v7 para el procedimiento ECMP.
 
-La matriz exacta de compatibilidad será definida durante las pruebas.
+La selección del script deberá realizarse según la familia de RouterOS detectada. El agente deberá detener la operación si la versión es incompatible, no está validada o no puede identificarse.
 
-## 20. Independencia de ubicación
+La compatibilidad inicial y el registro de versiones certificadas se definen en [Matriz inicial de versiones de RouterOS](08-matriz-versiones-routeros.md).
 
-Los requisitos de este documento deberán cumplirse independientemente de dónde termine instalado el agente.
+## 20. Portabilidad y ubicación
 
-Las alternativas a evaluar serán:
+El agente deberá ejecutarse sin instalador, servicio permanente ni autoarranque. Su paquete podrá trasladarse entre equipos Windows autorizados, pero deberá ejecutarse desde una carpeta local y validar su integridad antes de iniciar.
+
+La ubicación se elegirá por operación según la conectividad disponible:
 
 ```text
-A. PC del cliente
+A. PC del cliente accesible mediante AnyDesk
 
-B. Equipo del técnico
+B. Equipo del técnico conectado mediante VPN o red privada
 
-C. Otro equipo controlado por la empresa
-
-D. Ejecución manual asistida sin agente permanente
+C. Otro equipo controlado por la empresa con conectividad autorizada
 ```
 
-La decisión se tomará después de realizar las pruebas técnicas correspondientes.
+En todos los casos deberán cumplirse los mismos requisitos de autenticación, autorización, conectividad y auditoría definidos en [Modalidad de ejecución del agente](10-modalidad-agente.md).
 
 ## 21. Estado actual
 
@@ -334,14 +329,14 @@ Todavía deben determinarse:
 * Lenguaje de programación.
 * Framework.
 * Tecnología de automatización de Windows.
-* Tecnología de automatización de WinBox.
-* Método de comunicación con MikroTik.
+* Biblioteca cliente de la API de RouterOS.
+* Administración de certificados para `api-ssl`.
 * Protocolo de comunicación con el servidor.
 * Sistema de autenticación.
 * Sistema de autorización.
 * Gestión de credenciales.
-* Sistema de actualización.
-* Método de instalación.
-* Ubicación definitiva del agente.
+* Formato del paquete portátil.
+* Firma digital o mecanismo de validación de integridad.
+* Procedimiento de distribución y sustitución de versiones.
 
 Estas decisiones forman parte de la siguiente etapa de diseño técnico.
