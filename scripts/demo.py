@@ -58,13 +58,21 @@ def self_test(client, session, processes, output):
     health = client.get('/health').raise_for_status().json()
     if health['mode'] != 'simulated' or health['ai_mode'] != 'simulated' or health['real_write_enabled']:
         raise RuntimeError('La autoprueba solo permite simulacion completa.')
-    parameters = {'tipo': 'ECMP', 'lineas': 2, 'vel1': '5M', 'gw1': '192.168.1.1', 'ip1': 2,
-                  'vel2': '10M', 'gw2': '192.168.2.1', 'ip2': 2, 'lan': '172.16.0.1', 'dhcp': True}
-    payload = {'text': 'Configurar balanceo ECMP', 'session_id': session,
-               'target': {'router_id': 'router-1', 'identity': 'lab-router', 'management_interface': 'ether14'},
-               'parameters': parameters}
+    devices = client.get('/devices').raise_for_status().json()
+    if not any(d['id'] == session for d in devices):
+        raise RuntimeError('El agente no aparece en la selección de equipos.')
+    inspection = client.post('/devices/' + session + '/inspect').raise_for_status().json()
+    def inspected():
+        record = client.get('/inspections/' + inspection['id']).raise_for_status().json()
+        if record['status'] == 'failed':
+            raise RuntimeError('Falló la lectura inicial.')
+        return record if record['status'] == 'completed' else None
+    inspection = wait_until(inspected, processes)
+    if not inspection['recommendation']['available']:
+        raise RuntimeError('No se obtuvo la recomendación esperada.')
+    save_json(output / 'analisis.json', inspection)
     # Verify a rejected request cannot dispatch execution.
-    rejected = client.post('/requests', json=payload).raise_for_status().json()
+    rejected = client.post('/inspections/' + inspection['id'] + '/prepare').raise_for_status().json()
 
     def await_status(request_id, expected):
         def check():
@@ -85,7 +93,7 @@ def self_test(client, session, processes, output):
         raise RuntimeError('El caso de rechazo no paso.')
     save_json(output / 'rechazo.json', rejected_report)
 
-    record = client.post('/requests', json=payload).raise_for_status().json()
+    record = client.post('/inspections/' + inspection['id'] + '/prepare').raise_for_status().json()
     record = await_status(record['id'], 'await_approval')
     # A changed hash must be rejected and leave the pending approval intact.
     bad = client.post('/requests/' + record['id'] + '/decision', json={
@@ -109,13 +117,13 @@ def self_test(client, session, processes, output):
     summary = {'schema': 'ecmp-demo-acceptance/1', 'created_at': datetime.now(timezone.utc).isoformat(),
                'status': 'passed', 'ai_mode': 'simulated', 'router_mode': 'simulated',
                'php_http_real': True, 'separate_processes': True, 'real_router_tested': False,
-               'checks': {'rejection_without_execution': True, 'altered_approval_blocked': True,
+               'checks': {'device_selection_and_analysis': True, 'rejection_without_execution': True, 'altered_approval_blocked': True,
                           'approval_consumed_once': True, 'repeated_approval_blocked': True,
                           'configuration_verified': True},
                'verification_counts': {s: sum(c['status'] == s for c in checks)
                                        for s in ('passed', 'failed', 'not_performed')}}
     save_json(output / 'resultado.json', summary)
-    files = ['rechazo.json', 'aprobacion.json', 'resultado.json']
+    files = ['analisis.json', 'rechazo.json', 'aprobacion.json', 'resultado.json']
     (output / 'SHA256SUMS').write_text(''.join(
         hashlib.sha256((output / name).read_bytes()).hexdigest() + '  ' + name + '\n'
         for name in files), encoding='utf-8')

@@ -5,7 +5,7 @@ No background synchronous pretend-agent and no volatile approval state.
 import logging
 from pydantic import ValidationError
 from langgraph.graph import StateGraph, START, END
-from shared.contracts import ACTIONS, digest, variant
+from shared.contracts import ACTIONS, digest, variant, V7_LAB_VARIANT
 from shared.ecmp import precheck, validate_artifact, verify
 from server.app.ai.models import WorkflowState, ProblemClassification, SupportPlan
 from server.app.ai.policy import PlanValidator, PlanRejected
@@ -21,9 +21,11 @@ def approval_binding(r):
                    operations_hash=r['executable']['operations_hash'])
     if r.get('ai_schema') == 1:
         binding['plan_hash'] = digest(r['plan'])
+    if r.get('execution_policy') == 'preserve_existing':
+        binding['execution_policy'] = r['execution_policy']
     return binding
 
-def build_workflow(interpreter: AIService, generator):
+def build_workflow(interpreter: AIService, generator, lab_enabled=False):
     validator = PlanValidator()
     def node(fn):
         def run(state):
@@ -88,16 +90,26 @@ def build_workflow(interpreter: AIService, generator):
         r['status'] = 'await_precheck' if r.get('parameters') else 'await_parameters'
 
     def compatibility(r):
-        r['variant'] = variant(r['precheck']['version'], r['mode'])
-        r['precheck_hash'] = precheck(r['precheck'], r['target'], r['parameters'])
+        r['variant'] = variant(r['precheck']['version'], r['mode'], lab_enabled)
+        if r.get('execution_policy') == 'preserve_existing' and r['session_id'].startswith('offline:'):
+            from server.app.existing_ecmp import check_existing
+            r['precheck_hash'] = check_existing(r['precheck'], r['target'], r['parameters'], r['mode'], lab_enabled)
+        else:
+            r['precheck_hash'] = precheck(r['precheck'], r['target'], r['parameters'], lab_enabled)
         r['status'] = 'compatible'
 
     def artifact(r):
-        r['artifact'] = generator.generate(r['parameters'])
+        r['artifact'] = (generator.generate_v7_lab(r['parameters']) if r['variant'] == V7_LAB_VARIANT
+                         else generator.generate(r['parameters']))
         r['status'] = 'artifact_received'
 
     def validate(r):
+        if (r['artifact'].get('routeros_family') == 'v7') != (r['variant'] == V7_LAB_VARIANT):
+            raise ValueError('Familia distinta de la variante seleccionada')
         r['executable'] = validate_artifact(r['artifact'], r['parameters'])
+        if r.get('execution_policy') == 'preserve_existing' and r['session_id'].startswith('offline:'):
+            from server.app.existing_ecmp import remaining_executable
+            r['executable'] = remaining_executable(r['executable'], r['precheck'], r['target'], r['parameters'], r['mode'], lab_enabled)
         r['binding'] = approval_binding(r)
         r['binding_hash'] = digest(r['binding'])
         r['status'] = 'await_approval'

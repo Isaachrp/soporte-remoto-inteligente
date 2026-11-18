@@ -61,6 +61,9 @@ def final_response(record):
     summary = MESSAGES[record['status']]
     if record.get('reason') == 'openai_api_key_missing':
         summary = 'Falta OPENAI_API_KEY para ECMP_AI_MODE=openai. Configurela en el entorno del servidor.'
+    if record.get('reason', '').startswith('openrouter_'):
+        from server.app.services.openrouter import ERROR_MESSAGES
+        summary = ERROR_MESSAGES.get(record['reason'], summary)
     if record.get('reconciliation_observed'):
         summary = 'Estado consultado. Requiere revision manual; la aprobacion anterior no autoriza mas escrituras.'
     if record.get('analysis_source') == 'deterministic_fallback':

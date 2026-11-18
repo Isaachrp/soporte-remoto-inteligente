@@ -83,10 +83,16 @@ class Result(Strict):
 
 # Exact versions are deliberately empty: mocks do not certify RouterOS.
 CERTIFIED = frozenset()
+V7_LAB_VERSION = '7.24.5 (stable)'
+V7_LAB_VARIANT = 'v7-equal-cost-prepared-lab/1'
+V7_LAB_GENERATOR = 'ECMP-PHP-V7-LAB/0.2.0'
+V7_LAB_ADAPTER = 'ecmp-v7-prepared-lab/1'
 
-def variant(version, mode):
+def variant(version, mode, lab_enabled=False):
     if mode == "simulated" and version == "6.49.18":
         return "legacy-v6-simulation-only"
+    if mode == 'real' and version == V7_LAB_VERSION and lab_enabled is True:
+        return V7_LAB_VARIANT
     raise ValueError("Version/variante no certificada; escrituras reales bloqueadas")
 
 ACTIONS = {

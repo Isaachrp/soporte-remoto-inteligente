@@ -65,3 +65,12 @@ Los estados permitidos serán: `Pendiente`, `En pruebas`, `Certificada`, `Certif
 
 La prueba optativa `tests/lab/test_readonly.py` solo verifica lectura TLS/identidad/versión, no ECMP. No se ejecutó por falta de laboratorio. [Resultados y pendientes](14-entrega-mvp.md).
 
+## Actualizacion del laboratorio v7
+
+RouterOS `7.24.5 (stable)` cuenta con [resultados manuales reportados](23-resultados-laboratorio-manual-v7.md).
+La [integracion experimental](24-integracion-supervisada-v7.md) requiere habilitacion
+explicita en servidor/agente y la topologia preparada exacta. Su aplicacion
+automatica real esta pendiente de ensayo. No se agrega esta version a CERTIFIED;
+las demas versiones reales siguen bloqueadas. La lectura y el ensayo manual no
+equivalen a certificacion del ejecutor.
+

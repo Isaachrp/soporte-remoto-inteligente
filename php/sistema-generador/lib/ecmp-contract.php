@@ -29,6 +29,10 @@ function validate_ecmp(array $p): array {
 
 function ecmp_artifact(array $p, string $family): array {
     validate_ecmp($p);
+    if ($family === 'v7-lab') {
+        require_once __DIR__ . '/ecmp-v7-lab.php';
+        return ecmp_v7_lab_execution_artifact($p);
+    }
     if ($family !== 'v6') {
         throw new InvalidArgumentException('Variante v7 pendiente de implementacion y laboratorio');
     }

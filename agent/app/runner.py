@@ -1,6 +1,6 @@
 import ssl
 import time
-from shared.contracts import ACTIONS, ADAPTER, VERSION, digest, variant
+from shared.contracts import ACTIONS, ADAPTER, VERSION, V7_LAB_ADAPTER, V7_LAB_VARIANT, digest, variant
 from shared.ecmp import precheck, validate_artifact
 
 class Agent:
@@ -60,7 +60,8 @@ class Agent:
             if action == 'get_ecmp_precheck':
                 return {'status':'ok','snapshot':self.router.snapshot()}
             executable = validate_artifact(payload['artifact'],payload['parameters'])
-            if executable != payload['executable'] or executable['adapter_version'] != ADAPTER:
+            expected_adapter = V7_LAB_ADAPTER if payload['artifact'].get('routeros_family') == 'v7' else ADAPTER
+            if executable != payload['executable'] or executable['adapter_version'] != expected_adapter:
                 raise ValueError('Representacion alterada')
             if action == 'verify_ecmp':
                 return {'status':'ok','snapshot':self.router.snapshot()}
@@ -76,9 +77,13 @@ class Agent:
             if actual != binding or digest(actual) != payload['binding_hash']:
                 raise ValueError('Artefacto distinto del aprobado')
             current = self.router.snapshot()
-            if variant(current['version'], self.router.mode) != binding['variant']:
+            lab_enabled = getattr(self.router, 'lab_enabled', False)
+            selected_variant = variant(current['version'], self.router.mode, lab_enabled)
+            if selected_variant != binding['variant']:
                 raise ValueError('Variante distinta de la aprobada')
-            if precheck(current,payload['target'],payload['parameters']) != payload['precheck_hash']:
+            if (payload['artifact'].get('routeros_family') == 'v7') != (selected_variant == V7_LAB_VARIANT):
+                raise ValueError('Artefacto de otra familia')
+            if precheck(current,payload['target'],payload['parameters'],lab_enabled) != payload['precheck_hash']:
                 raise ValueError('Precondiciones alteradas')
             claim = self.client.post(self.base+'/tasks/'+task['id']+'/claim',json=current)
             claim.raise_for_status()

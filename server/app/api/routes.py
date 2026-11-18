@@ -17,11 +17,37 @@ def routes(service):
 
     @router.get('/health')
     def health():
-        return {'status':'ok','mode':service.settings.mode,'ai_mode':service.settings.ai_mode,'real_write_enabled':False}
+        return {'status':'ok','mode':service.settings.mode,'ai_mode':service.settings.ai_mode,
+                'real_write_enabled':service.settings.mode == 'real' and service.settings.v7_lab_enabled,
+                'v7_lab_enabled':service.settings.v7_lab_enabled, 'ecmp_certified':False}
 
     @router.get('/actions',dependencies=[Depends(technician)])
     def actions():
         return ACTIONS
+
+    @router.get('/devices', dependencies=[Depends(technician)])
+    def devices():
+        return service.devices()
+
+    @router.post('/devices/{session_id}/inspect', dependencies=[Depends(technician)], status_code=201)
+    def inspect(session_id: str):
+        return service.inspect(session_id)
+
+    @router.get('/inspections/{id}', dependencies=[Depends(technician)])
+    def inspection(id: str):
+        return service.inspection(id)
+
+    @router.post('/inspections/{id}/prepare', dependencies=[Depends(technician)], status_code=201)
+    def prepare_inspection(id: str):
+        return service.prepare_inspection(id)
+
+    @router.get('/history', dependencies=[Depends(technician)])
+    def history():
+        service.sweep()
+        with service.store.transaction() as db:
+            return [{'id': r['id'], 'created': r['created'], 'identity': r['target']['identity'],
+                     'status': r['status']} for r in sorted(service.store.all(db, 'request'),
+                     key=lambda r: r['created'], reverse=True)[:50]]
 
     @router.post('/requests',dependencies=[Depends(technician)],status_code=201)
     def create(body: Request):
@@ -47,8 +73,11 @@ def routes(service):
     def report(id: str):
         record = service.read(id)
         return {'schema': 'ecmp-delivery/1', 'exported_at': datetime.now(timezone.utc).isoformat(),
+                'inspection': service.inspection(record['inspection_id']) if record.get('inspection_id') else None,
                 'mode': record['mode'], 'ai_mode': service.settings.ai_mode,
-                'real_write_enabled': False, 'request': record, 'audit': service.audits(id),
+                'real_write_enabled': service.settings.mode == 'real' and service.settings.v7_lab_enabled,
+                'v7_lab_enabled': service.settings.v7_lab_enabled, 'ecmp_certified':False,
+                'request': record, 'audit': service.audits(id),
                 'limitations': ['Sin certificacion ECMP en RouterOS real.',
                                 'Trafico WAN y conectividad LAN no verificados.']}
 

@@ -1,0 +1,114 @@
+{
+  "tipo": "resumen_documental_no_ejecutable",
+  "fecha_corte": "2026-11-06",
+  "registros_servidor": [
+    {
+      "id": "cdee4e78-bf13-4f20-9749-7c6b89e33acc",
+      "origen": "Extracto de la base local, leído sin modificarla",
+      "estado_servidor": "approved",
+      "proveedor_registrado": "openrouter",
+      "procedimiento": "ECMP",
+      "politica": "preserve_existing",
+      "recomendaciones_originales": {
+        "summary": "Sugerencias basadas en evidencia de rutas múltiples y configuraciones de interfaz observadas.",
+        "suggestions": [
+          {
+            "procedure": "ECMP",
+            "reason": "Existen dos rutas por defecto activas (gateway 192.168.1.1 y 192.168.2.1) con distancia 1, lo que indica una configuración de balanceo de carga de equal-cost multi-path."
+          },
+          {
+            "procedure": "PCCrV7",
+            "reason": "Se observan dos interfaces de salida (ether1, ether2) con reglas NAT de masquerade, lo que sugiere la posibilidad de balanceo de carga por paquetes en salidas múltiples."
+          },
+          {
+            "procedure": "PBrV7",
+            "reason": "La presencia de múltiples subredes (192.168.1.0/24, 192.168.2.0/24, 172.16.0.0/24, 10.255.255.0/24) y rutas de gateway differentes permite considerar politicas de enrutamiento basá"
+          }
+        ]
+      },
+      "error_analisis": null,
+      "conteos_diagnostico": {
+        "/interface/ethernet": 4,
+        "/ip/address": 4,
+        "/ip/dhcp-server": 1,
+        "/ip/dhcp-server/network": 1,
+        "/ip/dns": 1,
+        "/ip/firewall/mangle": 0,
+        "/ip/firewall/nat": 2,
+        "/ip/pool": 1,
+        "/ip/route": 6,
+        "/interface/bridge/port": 0,
+        "/ip/firewall/filter": 0,
+        "/ip/dhcp-client": 1,
+        "/routing/rule": 0,
+        "/routing/table": 1
+      }
+    },
+    {
+      "id": "c161bdb4-ff67-4752-ab78-39318c1f83d3",
+      "origen": "Extracto de la base local, leído sin modificarla",
+      "estado_servidor": "approved",
+      "proveedor_registrado": "openrouter",
+      "procedimiento": "PCCrV7",
+      "politica": "original_php",
+      "recomendaciones_originales": {
+        "summary": "Opciones sugeridas del catálogo, condicionales y basadas en evidencia parcial:",
+        "suggestions": [
+          {
+            "procedure": "ECMP",
+            "reason": "Dos rutas activas 0.0.0.0/0 con igual distancia hacia 192.168.1.1 y 192.168.2.1. Si el técnico busca reparto de salida por múltiples rutas sin clasificación de flujos."
+          },
+          {
+            "procedure": "PCCrV7",
+            "reason": "Dos WAN con NAT de origen y rutas predeterminadas (ether1, ether2). En v7, si se requiere persistencia de sesión por enlace WAN."
+          },
+          {
+            "procedure": "Firewall",
+            "reason": "Tabla /ip/firewall/filter sin reglas registradas. Si se requiere control de tráfico de entrada, forward o salida."
+          },
+          {
+            "procedure": "Hotspot",
+            "reason": "Servidor DHCP activo en ether3 con red de clientes 172.16.0.0/24. Si se desea portal cautivo para esa LAN."
+          }
+        ]
+      },
+      "error_analisis": null,
+      "conteos_diagnostico": {
+        "/interface/ethernet": 4,
+        "/ip/address": 4,
+        "/ip/dhcp-server": 1,
+        "/ip/dhcp-server/network": 1,
+        "/ip/dns": 1,
+        "/ip/firewall/mangle": 0,
+        "/ip/firewall/nat": 2,
+        "/ip/pool": 1,
+        "/ip/route": 6,
+        "/interface/bridge/port": 0,
+        "/ip/firewall/filter": 0,
+        "/ip/dhcp-client": 1,
+        "/routing/rule": 0,
+        "/routing/table": 1
+      }
+    }
+  ],
+  "resultados_comunicados_por_el_alumno": [
+    {
+      "id": "cdee4e78-bf13-4f20-9749-7c6b89e33acc",
+      "origen": "Resumen de JSON pegado por el alumno en el chat; no es el archivo original",
+      "status": "configuration_with_warnings",
+      "completed": 0,
+      "preserved": 7,
+      "wan_lan_tested": false,
+      "comprobaciones_estructurales": "Aprobadas según el resultado comunicado"
+    },
+    {
+      "id": "c161bdb4-ff67-4752-ab78-39318c1f83d3",
+      "origen": "Resumen del resultado y terminal aportados por el alumno",
+      "status": "intervention_required",
+      "functionality_verified": false,
+      "causa": "No determinada",
+      "cuenta_utilizada": "ecmp-reader",
+      "permisos_cuenta": "No comprobados"
+    }
+  ]
+}

@@ -25,11 +25,55 @@ class Operations:
         self.settings = settings
         self.clock = clock
         self.store = Store(settings.database)
-        self.graph = build_workflow(interpreter or Interpreter(settings), generator or Generator(settings))
+        self.graph = build_workflow(interpreter or Interpreter(settings), generator or Generator(settings), settings.v7_lab_enabled)
 
     def audit(self, db, request_id, actor, event):
         db.execute('INSERT INTO audit(request_id,at,actor,event) VALUES(?,?,?,?)', (request_id,self.clock(),actor,event))
         logger.info('audit_event request_id=%s actor=%s event=%s', request_id, actor, event)
+
+    def devices(self):
+        with self.store.transaction() as db:
+            return [{k: s[k] for k in ('id', 'agent_id', 'router_id', 'mode', 'last_seen')}
+                    for s in self.store.all(db, 'session')
+                    if not s['closed'] and s['expires'] > self.clock()
+                    and self.clock() - s['last_seen'] <= self.settings.heartbeat_seconds]
+
+    def inspect(self, session_id):
+        self.sweep()
+        with self.store.transaction() as db:
+            s = self.session(db, session_id)
+            fail(self.clock() - s['last_seen'] > self.settings.heartbeat_seconds, 409, 'Agente desconectado')
+            for old in self.store.all(db, 'inspection'):
+                if old['session_id'] == session_id and old['status'] == 'pending':
+                    return old
+            id = str(uuid.uuid4())
+            record = {'id': id, 'session_id': session_id, 'router_id': s['router_id'],
+                      'mode': s['mode'], 'status': 'pending', 'created': self.clock()}
+            task = {'id': 'inspection:' + id, 'request_id': id, 'inspection': True,
+                    'session_id': session_id, 'action': 'get_ecmp_precheck', 'status': 'pending',
+                    'created': self.clock(), 'deadline': self.clock() + 300,
+                    'payload': {'mode': s['mode'], 'target': {'router_id': s['router_id']}}}
+            self.store.put(db, 'inspection', id, record)
+            self.store.put(db, 'task', task['id'], task)
+            self.audit(db, id, self.settings.technician_id, 'inspection_requested')
+            return record
+
+    def inspection(self, id):
+        self.sweep()
+        with self.store.transaction() as db:
+            return self.required(db, 'inspection', id)
+
+    def prepare_inspection(self, id):
+        from shared.contracts import Request
+        from server.app.services.discovery import recommend
+        record = self.inspection(id)
+        fail(record['status'] != 'completed', 409, 'El análisis no se ha completado')
+        fail(self.clock() - record['observed_at'] > 300, 409, 'Repita el análisis: tiene más de cinco minutos')
+        proposal = recommend(record['snapshot'], record['router_id'], record['mode'], self.settings.v7_lab_enabled)
+        fail(not proposal['available'], 409, 'La configuración requiere revisión manual')
+        # The ordinary AI workflow performs a fresh precheck before generating PHP.
+        return self.create(Request(text='Configurar balanceo ECMP', session_id=record['session_id'],
+                                   target=proposal['target'], parameters=proposal['parameters']), inspection_id=id)
 
     def required(self, db, kind, id):
         value = self.store.get(db,kind,id)
@@ -84,7 +128,7 @@ class Operations:
         self.audit(db,r['id'],'workflow',r['status'])
         return r
 
-    def create(self, request):
+    def create(self, request, inspection_id=None):
         with self.store.transaction() as db:
             s = self.session(db,request.session_id)
             fail(s['router_id'] != request.target.router_id)
@@ -93,6 +137,8 @@ class Operations:
             terminal = {'out_of_scope','rejected','expired','invalid_plan','ai_error','configuration_failed','configuration_with_warnings','configuration_successful'}
             fail(any(r['target']['router_id'] == s['router_id'] and r['status'] not in terminal for r in self.store.all(db,'request')),409,'Router tiene operacion pendiente; requiere reconciliacion')
             r = request.model_dump() | {'id':str(uuid.uuid4()),'status':'received','technician':self.settings.technician_id,'mode':s['mode'],'created':self.clock()}
+            if inspection_id:
+                r['inspection_id'] = inspection_id
             return self.advance(db,r)
 
     def parameters(self, id, parameters):
@@ -180,8 +226,8 @@ class Operations:
             fail(r['binding_hash'] != t['payload']['binding_hash'])
             fail(validate_artifact(r['artifact'],r['parameters']) != r['executable'])
             try:
-                fail(variant(snapshot['version'],s['mode']) != r['variant'])
-                fail(precheck(snapshot,r['target'],r['parameters']) != r['precheck_hash'])
+                fail(variant(snapshot['version'],s['mode'],self.settings.v7_lab_enabled) != r['variant'])
+                fail(precheck(snapshot,r['target'],r['parameters'],self.settings.v7_lab_enabled) != r['precheck_hash'])
             except (KeyError, ValueError):
                 raise HTTPException(409,'Condiciones previas cambiaron')
             a.update(used=True,used_at=self.clock())
@@ -210,6 +256,16 @@ class Operations:
                 data['snapshot'] = Snapshot.model_validate(data['snapshot']).model_dump()
             t.update(status='completed',result=data,result_hash=digest(data))
             self.store.put(db,'task',task_id,t)
+            if t.get('inspection'):
+                from server.app.services.discovery import recommend
+                record = self.required(db, 'inspection', t['request_id'])
+                record.update(status='failed', error=data['error'])
+                if data['status'] == 'ok' and data['snapshot']:
+                    record.update(status='completed', snapshot=data['snapshot'], observed_at=self.clock(),
+                                  recommendation=recommend(data['snapshot'], record['router_id'], record['mode'], self.settings.v7_lab_enabled))
+                self.store.put(db, 'inspection', record['id'], record)
+                self.audit(db, record['id'], 'agent', 'inspection_' + record['status'])
+                return {'duplicate': False}
             r = self.required(db,'request',t['request_id'])
             observation = ActionObservation(task_id=task_id, action_id=t['action'],
                 status=data['status'], completed=data['completed'], error=data['error'])
@@ -237,6 +293,16 @@ class Operations:
                 if t['status'] not in ('pending','delivered','claimed'):
                     continue
                 s = self.required(db,'session',t['session_id'])
+                if t.get('inspection'):
+                    if (s['closed'] or s['expires'] <= now or now-s['last_seen'] > self.settings.heartbeat_seconds
+                            or t['deadline'] <= now):
+                        t['status'] = 'expired'
+                        record = self.required(db, 'inspection', t['request_id'])
+                        record.update(status='failed', error='agent_offline_or_expired')
+                        self.store.put(db, 'inspection', record['id'], record)
+                        self.store.put(db, 'task', t['id'], t)
+                        self.audit(db, record['id'], 'recovery', 'inspection_expired')
+                    continue
                 r = self.required(db,'request',t['request_id'])
                 a = self.store.get(db,'approval',r.get('approval_id',''))
                 stale = s['closed'] or s['expires'] <= now or now-s['last_seen'] > self.settings.heartbeat_seconds

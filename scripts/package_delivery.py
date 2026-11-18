@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     paths = {ROOT / name for name in (
-        'README.md', 'pytest.ini', 'iniciar-demo.cmd', '.gitignore',
+        'README.md', 'pytest.ini', 'iniciar-demo.cmd', 'iniciar-lab-v7.cmd', '.gitignore',
         'server/__init__.py', 'agent/__init__.py',
         'server/requirements.txt', 'server/requirements.lock',
         'agent/requirements.txt', 'agent/requirements.lock',
@@ -18,16 +18,18 @@ def main():
         'server/.env.example', 'agent/.env.example',
         'tests/requirements.txt', 'tests/requirements.lock',
         'tests/fixtures/ecmp-before.php',
+        'tests/fixtures/v7-precheck-main-fib-flag.json',
         'php/sistema-generador/api/ecmp.php',
         'php/sistema-generador/lib/ecmp-contract.php',
         'php/sistema-generador/lib/ecmp-legacy.php',
+        'php/sistema-generador/lib/ecmp-v7-lab.php',
         'php/sistema-generador/logo_b.png', 'php/sistema-generador/modem.gif',
         'php/sistema-generador/mikrotik.jpg', 'php/sistema-generador/clientes.jpg',
         'server/app/ui.html')}
     for folder in ('server/app', 'agent/app', 'shared', 'tests', 'scripts'):
         paths.update((ROOT / folder).rglob('*.py'))
     for path in (ROOT / 'docs').rglob('*'):
-        if path.is_file() and (path.suffix in ('.md', '.json', '.jpg') or path.name == 'SHA256SUMS'):
+        if path.is_file() and (path.suffix in ('.md', '.json', '.jpg', '.png') or path.name == 'SHA256SUMS'):
             paths.add(path)
     # Never descend into a virtual environment or include hidden local directories.
     paths = {p for p in paths if not any(part.startswith('.') or part == '__pycache__'
@@ -37,7 +39,7 @@ def main():
         raise RuntimeError('Faltan archivos de entrega: ' + ', '.join(missing))
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
-    name = 'primer-avance-' + datetime.now().strftime('%Y%m%d-%H%M%S') + '.zip'
+    name = 'segundo-avance-' + datetime.now().strftime('%Y%m%d-%H%M%S') + '.zip'
     target = output / name
     manifest = []
     with zipfile.ZipFile(target, 'x', compression=zipfile.ZIP_DEFLATED) as archive:

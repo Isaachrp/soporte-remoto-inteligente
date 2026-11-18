@@ -47,6 +47,9 @@ class Interpreter:
         self.client_factory = client_factory
 
     def _parse(self, schema, system_prompt, data):
+        if self.settings.ai_mode == 'openrouter':
+            from server.app.services.openrouter import parse
+            return parse(self.settings, schema, system_prompt, data)
         if not os.getenv('OPENAI_API_KEY', '').strip():
             raise AIError('openai_api_key_missing')
         from openai import OpenAI, APITimeoutError, LengthFinishReasonError, ContentFilterFinishReasonError

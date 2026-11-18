@@ -10,7 +10,7 @@ from server.app.core.config import Settings
 from server.app.services.operations import Operations
 from server.app.api.routes import routes
 
-def create_app(settings=None, **dependencies):
+def create_app(settings=None, central_only=False, **dependencies):
     service = Operations(settings or Settings.from_env(), **dependencies)
     @asynccontextmanager
     async def lifespan(app):
@@ -26,10 +26,14 @@ def create_app(settings=None, **dependencies):
             await task
     app = FastAPI(title='ECMP supervisado',version='0.1.0',lifespan=lifespan)
     app.state.service = service
-    app.include_router(routes(service))
+    if central_only:
+        from server.app.api.central import central_routes
+        app.include_router(central_routes(service))
+    else:
+        app.include_router(routes(service))
     @app.get('/',include_in_schema=False)
     def technician_interface():
-        return FileResponse(Path(__file__).with_name('ui.html'))
+        return FileResponse(Path(__file__).with_name('central.html' if central_only else 'ui.html'))
     @app.get('/ui-assets/{name}', include_in_schema=False)
     def technician_asset(name: str):
         if name not in {'logo_b.png', 'modem.gif', 'mikrotik.jpg', 'clientes.jpg'}:
