@@ -50,20 +50,18 @@ El sistema de soporte no deberá generar arbitrariamente comandos de configuraci
 
 La configuración deberá provenir del procedimiento y del generador previamente establecido.
 
-## 5. Acceso al equipo del cliente
+## 5. Acceso al MikroTik
 
-Una vez generado el script, el procedimiento continúa mediante acceso remoto.
+Una vez generado el script, el agente deberá conectarse directamente al MikroTik mediante la API nativa de RouterOS.
 
-El técnico utiliza AnyDesk para acceder a la computadora del cliente.
+La conexión automatizada utilizará preferentemente `api-ssl` sobre TCP 8729. Deberá existir conectividad IP entre el equipo donde se ejecuta el agente y el router.
 
-Desde la computadora del cliente:
+1. Se proporciona la dirección del MikroTik.
+2. Se obtiene de forma segura la referencia a las credenciales autorizadas.
+3. Se valida el certificado TLS.
+4. Se establece y autentica la sesión con la API.
 
-1. Se abre WinBox.
-2. Se proporciona la IP del MikroTik.
-3. Se proporcionan las credenciales correspondientes.
-4. Se establece conexión con el router.
-
-AnyDesk será considerado el medio de acceso remoto a la computadora del cliente y no será responsable de determinar qué configuración debe realizarse.
+AnyDesk podrá seguir siendo utilizado por el técnico para tareas manuales, preparación o contingencia, pero no formará parte del canal automatizado entre el agente y el router.
 
 ## 6. Información que debe verificarse en el MikroTik
 
@@ -95,16 +93,18 @@ Entre las validaciones consideradas se encuentran:
 * Que exista la cantidad esperada de líneas.
 * Que las IP correspondan con las líneas configuradas.
 * Que los gateways correspondan con las líneas.
-* Que la versión de RouterOS sea compatible con el procedimiento.
+* Que la versión pertenezca a RouterOS v6 o v7 y que exista una variante ECMP autorizada para la familia detectada.
 * Que el script corresponda con los datos proporcionados.
 
 Si existe una discrepancia que pueda provocar una configuración incorrecta, el procedimiento deberá detenerse y solicitar intervención del técnico.
 
 ## 8. Ejecución del script
 
-Una vez completadas las validaciones, el sistema deberá ejecutar el script ECMP generado por la aplicación existente.
+Una vez completadas las validaciones, el sistema deberá ejecutar exactamente el artefacto ECMP generado por el sistema PHP existente y aprobado para la operación.
 
 La ejecución deberá realizarse mediante acciones autorizadas y previamente definidas.
+
+Antes de entregarlo al agente, se deberá validar su tipo, versión del generador, familia de RouterOS, parámetros y suma de integridad, conforme al [inventario inicial de scripts ECMP](../11-inventario-scripts-ecmp.md).
 
 El sistema no deberá permitir que la inteligencia artificial genere comandos arbitrarios para modificar el router.
 
@@ -224,11 +224,11 @@ Todavía deben definirse técnicamente:
 
 * Cómo se integrará el sistema con la aplicación existente que genera los scripts.
 * Cómo obtendrá el agente la información del MikroTik.
-* Cómo interactuará automáticamente con WinBox.
-* Cómo se ejecutará el script.
+* Qué biblioteca cliente se utilizará para la API de RouterOS.
+* Cómo se representará y ejecutará mediante la API la variante ECMP autorizada.
 * Qué verificaciones serán automáticas.
 * Qué verificaciones requerirán intervención humana.
 * Cómo se manejarán las credenciales.
 * Cómo se realizará el registro de auditoría.
-* Qué versiones de RouterOS serán compatibles.
+* Qué versiones menores y de parche de RouterOS v6 y v7 quedarán certificadas después de las pruebas técnicas.
 * Qué hacer ante errores durante la ejecución.

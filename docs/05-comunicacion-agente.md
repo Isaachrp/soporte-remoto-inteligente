@@ -49,9 +49,12 @@ Sistema principal
 
 Cuando un agente esté disponible, deberá identificarse ante el sistema principal.
 
+Debido a que el agente será portátil, este registro se realizará al inicio de cada ejecución y creará una sesión temporal.
+
 La información de registro podrá incluir:
 
 * Identificador del agente.
+* Identificador de la sesión de ejecución.
 * Estado del agente.
 * Versión del agente.
 * Sistema operativo.
@@ -59,6 +62,8 @@ La información de registro podrá incluir:
 * Capacidades disponibles.
 
 El identificador deberá ser único.
+
+Al cerrar el agente, la sesión deberá marcarse como desconectada y no deberá asumirse que el agente permanecerá disponible para operaciones posteriores.
 
 ## 5. Estado del agente
 
@@ -275,14 +280,15 @@ Por ejemplo:
 ```text
 Acciones permitidas:
 
-- open_winbox
-- connect_router
+- connect_router_api_ssl
+- validate_router_identity
+- authenticate_router
 - collect_router_info
-- execute_procedure
+- execute_ecmp_procedure
 - collect_routes
 - collect_interface_stats
 - collect_mangle_stats
-- disconnect
+- disconnect_router_api
 ```
 
 Esta lista es inicial y deberá definirse con mayor precisión durante el diseño del agente.

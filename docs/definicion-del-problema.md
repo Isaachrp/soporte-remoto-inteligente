@@ -66,6 +66,8 @@ El técnico mantendrá supervisión sobre el proceso y podrá requerirse su auto
 
 Actualmente se dispone de diferentes configuraciones y scripts utilizados por los técnicos para atender clientes MikroTik.
 
+Estos scripts son generados por el sistema PHP existente, ubicado en `php/sistema-generador`. El nuevo sistema complementará esta aplicación y no sustituirá su lógica de generación durante el MVP.
+
 Entre las configuraciones existentes se encuentran:
 
 - ECMP — Balanceo ECMP.
@@ -87,15 +89,13 @@ Estas configuraciones representan el conjunto de procedimientos actualmente disp
 
 ## Alcance inicial
 
-El alcance inicial se limitará a un conjunto reducido de procedimientos que permitan desarrollar y validar el concepto de soporte automatizado.
+El alcance inicial se limitará a un único procedimiento que permita desarrollar y validar el concepto de soporte automatizado.
 
-Los primeros procedimientos considerados para el MVP son:
+El único procedimiento incluido en el MVP es:
 
 - ECMP.
-- PCC.
-- Hotspot.
 
-Los demás procedimientos podrán incorporarse posteriormente dependiendo de los resultados obtenidos durante el desarrollo del proyecto.
+PCC, Hotspot y todos los demás procedimientos quedan expresamente fuera del alcance del MVP. Podrán incorporarse posteriormente dependiendo de los resultados obtenidos durante el desarrollo del proyecto y después de su definición y validación independientes.
 
 ## Consideraciones
 
@@ -103,7 +103,9 @@ La automatización no deberá otorgar a la inteligencia artificial acceso ilimit
 
 Las acciones deberán basarse en procedimientos previamente definidos, y las operaciones que impliquen modificaciones sensibles deberán contar con mecanismos de aprobación y supervisión por parte del técnico.
 
-El mecanismo específico mediante el cual el agente local interactuará con WinBox y con los equipos MikroTik será definido durante la etapa de diseño de la arquitectura.
+El agente local se comunicará con los equipos MikroTik mediante la API nativa de RouterOS, preferentemente a través de `api-ssl` sobre TCP 8729. WinBox quedará como herramienta manual de preparación, diagnóstico y contingencia.
+
+Para el MVP, el agente será una aplicación portátil para Windows, iniciada bajo demanda y sin instalación permanente, servicio residente ni autoarranque.
 
 ## Estado de la definición
 
@@ -111,12 +113,11 @@ Esta definición es preliminar.
 
 Todavía deben determinarse:
 
-- Los procedimientos exactos que se automatizarán.
-- Los scripts que utilizará cada procedimiento.
-- Los parámetros necesarios para adaptar los scripts.
+- La versión exacta del procedimiento y del script ECMP que se automatizarán.
+- El script ECMP autorizado que utilizará el procedimiento.
+- Los parámetros necesarios para adaptar el script ECMP.
 - Las acciones que ejecutará el agente local.
 - El nivel de autonomía de la inteligencia artificial.
 - Las acciones que requerirán aprobación humana.
-- El método de verificación de cada procedimiento.
-- El mecanismo de comunicación con los equipos MikroTik.
+- El método de verificación del procedimiento ECMP.
 - Los requisitos de seguridad.

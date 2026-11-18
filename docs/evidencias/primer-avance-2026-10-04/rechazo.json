@@ -1,0 +1,585 @@
+{
+  "schema": "ecmp-delivery/1",
+  "exported_at": "2026-10-04T18:37:04.811683+00:00",
+  "mode": "simulated",
+  "ai_mode": "simulated",
+  "real_write_enabled": false,
+  "request": {
+    "id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+    "status": "rejected",
+    "original_request": "ECMP",
+    "classification": {
+      "procedure": "ECMP"
+    },
+    "plan": {
+      "category": "ECMP",
+      "explanation": "Procedimiento ECMP supervisado.",
+      "actions": [
+        {
+          "action_id": "get_ecmp_precheck",
+          "parameters": {},
+          "reason": "Comprobar condiciones del router.",
+          "risk_level": "READ_ONLY",
+          "requires_approval": false
+        },
+        {
+          "action_id": "apply_approved_ecmp",
+          "parameters": {},
+          "reason": "Aplicar el artefacto solo tras aprobacion humana.",
+          "risk_level": "REQUIRES_APPROVAL",
+          "requires_approval": true
+        },
+        {
+          "action_id": "verify_ecmp",
+          "parameters": {},
+          "reason": "Contrastar la configuracion resultante.",
+          "risk_level": "READ_ONLY",
+          "requires_approval": false
+        }
+      ],
+      "missing_information": [],
+      "status": "ready"
+    },
+    "plan_hash": "92d69878974352f74fa260a27f8d1e6a208f0dc0654642cbadc8ab15be4154ec",
+    "ai_schema": 1,
+    "approved_actions": [],
+    "pending_actions": [],
+    "action_results": [
+      {
+        "task_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653:get_ecmp_precheck",
+        "action_id": "get_ecmp_precheck",
+        "status": "ok",
+        "completed": 0,
+        "error": null
+      }
+    ],
+    "requires_approval": false,
+    "errors": [],
+    "current_node": "generate_final_response",
+    "current_status": "rejected",
+    "result_analysis": {
+      "assessment": "not_executed",
+      "problem_resolved": false,
+      "requires_human_intervention": false,
+      "next_step": "submit_new_request"
+    },
+    "session_id": "adfa7b59-5f73-4456-b58f-f06d8fe92169",
+    "target": {
+      "router_id": "router-1",
+      "identity": "lab-router",
+      "management_interface": "ether14"
+    },
+    "parameters": {
+      "tipo": "ECMP",
+      "lineas": 2,
+      "lan": "172.16.0.1",
+      "dhcp": true,
+      "vel1": "5M",
+      "gw1": "192.168.1.1",
+      "ip1": 2,
+      "vel2": "10M",
+      "gw2": "192.168.2.1",
+      "ip2": 2
+    },
+    "technician": "technician-1",
+    "mode": "simulated",
+    "created": 1791139022.746312,
+    "message": "Operacion rechazada por el tecnico; sin autorizacion de escritura.",
+    "task_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653:get_ecmp_precheck",
+    "precheck": {
+      "identity": "lab-router",
+      "version": "6.49.18",
+      "tables": {
+        "/interface/ethernet": [
+          {
+            ".id": "*1",
+            "default-name": "ether1",
+            "name": "ether1"
+          },
+          {
+            ".id": "*2",
+            "default-name": "ether2",
+            "name": "ether2"
+          },
+          {
+            ".id": "*3",
+            "default-name": "ether3",
+            "name": "ether3"
+          },
+          {
+            ".id": "*4",
+            "default-name": "ether4",
+            "name": "ether4"
+          },
+          {
+            ".id": "*5",
+            "default-name": "ether5",
+            "name": "ether5"
+          },
+          {
+            ".id": "*6",
+            "default-name": "ether6",
+            "name": "ether6"
+          },
+          {
+            ".id": "*7",
+            "default-name": "ether7",
+            "name": "ether7"
+          },
+          {
+            ".id": "*8",
+            "default-name": "ether8",
+            "name": "ether8"
+          },
+          {
+            ".id": "*9",
+            "default-name": "ether9",
+            "name": "ether9"
+          },
+          {
+            ".id": "*10",
+            "default-name": "ether10",
+            "name": "ether10"
+          },
+          {
+            ".id": "*11",
+            "default-name": "ether11",
+            "name": "ether11"
+          },
+          {
+            ".id": "*12",
+            "default-name": "ether12",
+            "name": "ether12"
+          },
+          {
+            ".id": "*13",
+            "default-name": "ether13",
+            "name": "ether13"
+          },
+          {
+            ".id": "*14",
+            "default-name": "ether14",
+            "name": "ether14"
+          }
+        ],
+        "/ip/address": [
+          {
+            "address": "10.255.255.1/24",
+            "interface": "ether14"
+          }
+        ],
+        "/ip/dhcp-server": [],
+        "/ip/dhcp-server/network": [],
+        "/ip/dns": [],
+        "/ip/firewall/mangle": [],
+        "/ip/firewall/nat": [],
+        "/ip/pool": [],
+        "/ip/route": [],
+        "/interface/bridge/port": []
+      }
+    },
+    "variant": "legacy-v6-simulation-only",
+    "precheck_hash": "69926af9468df93a755dd8da66665c85f9d4f258a401f6a8e7842e2e9c9e74b7",
+    "artifact": {
+      "generation_id": "37cd7de811e2dde685196d9bd654c093",
+      "procedure": "ECMP",
+      "generator_version": "ECMP-PHP-001/1.0.0",
+      "routeros_family": "v6",
+      "parameters": {
+        "tipo": "ECMP",
+        "lineas": 2,
+        "lan": "172.16.0.1",
+        "dhcp": true,
+        "vel1": "5M",
+        "gw1": "192.168.1.1",
+        "ip1": 2,
+        "vel2": "10M",
+        "gw2": "192.168.2.1",
+        "ip2": 2
+      },
+      "script": "/interface ethernet\nset [ find default-name=ether1 ] comment=\"Puerto 1\" name=WAN1\nset [ find default-name=ether2 ] comment=\"Puerto 2\" name=WAN2\nset [ find default-name=ether3 ] comment=\"Puerto 3\" name=LAN\n\n/ ip address\nadd address=172.16.0.1/24 network=172.16.0.0 broadcast=172.16.0.255 interface=LAN\nadd address=192.168.1.2/24 network=192.168.1.0 broadcast=192.168.1.255 interface=WAN1\nadd address=192.168.2.2/24 network=192.168.2.0 broadcast=192.168.2.255 interface=WAN2\n\n/ ip firewall nat\nadd chain=srcnat out-interface=WAN1 action=masquerade\nadd chain=srcnat out-interface=WAN2 action=masquerade\n\n/ ip firewall mangle\nadd chain=input in-interface=WAN1 action=mark-connection new-connection-mark=wan1_conn\nadd chain=input in-interface=WAN2 action=mark-connection new-connection-mark=wan2_conn\nadd chain=output connection-mark=wan1_conn action=mark-routing new-routing-mark=to_wan1\nadd chain=output connection-mark=wan2_conn action=mark-routing new-routing-mark=to_wan2\n\n/ ip route\nadd dst-address=0.0.0.0/0 gateway=192.168.1.1,192.168.2.1,192.168.2.1 check-gateway=ping\nadd dst-address=0.0.0.0/0 distance=1 gateway=192.168.1.1 routing-mark=to_wan1 check-gateway=ping\nadd dst-address=0.0.0.0/0 distance=1 gateway=192.168.2.1 routing-mark=to_wan2 check-gateway=ping\n\n/ip dns\nset allow-remote-requests=yes servers=8.8.8.8,8.8.4.4\n\n/ip pool\nadd name=dhcp_pool_ECMP ranges=172.16.0.50-172.16.0.250\n/ip dhcp-server\nadd address-pool=dhcp_pool_ECMP disabled=no interface=LAN lease-time=8h name=dhcp_ECMP\n/ip dhcp-server network\nadd address=172.16.0.0/24 dns-server=172.16.0.1,8.8.8.8,8.8.4.4 gateway=172.16.0.1\n",
+      "script_hash": "4252cfdf7fd0cd9dbd545cc28ad75319346490a100a77a4416d806e2ff89b811",
+      "warnings": [
+        "NO CERTIFICADO: solo simulacion",
+        "Renombra puertos; modifica DNS y opcionalmente DHCP",
+        "Sintaxis legacy: broadcast, routing-mark y ponderacion pendientes de laboratorio"
+      ],
+      "generated_at": "2026-10-04T18:37:04+00:00"
+    },
+    "executable": {
+      "adapter_version": "ecmp-native/1",
+      "operations": [
+        {
+          "command": "/interface/ethernet/set",
+          "args": {
+            "comment": "Puerto 1",
+            "name": "WAN1"
+          },
+          "selector": {
+            "default-name": "ether1"
+          },
+          "line": 2
+        },
+        {
+          "command": "/interface/ethernet/set",
+          "args": {
+            "comment": "Puerto 2",
+            "name": "WAN2"
+          },
+          "selector": {
+            "default-name": "ether2"
+          },
+          "line": 3
+        },
+        {
+          "command": "/interface/ethernet/set",
+          "args": {
+            "comment": "Puerto 3",
+            "name": "LAN"
+          },
+          "selector": {
+            "default-name": "ether3"
+          },
+          "line": 4
+        },
+        {
+          "command": "/ip/address/add",
+          "args": {
+            "address": "172.16.0.1/24",
+            "network": "172.16.0.0",
+            "broadcast": "172.16.0.255",
+            "interface": "LAN"
+          },
+          "selector": null,
+          "line": 7
+        },
+        {
+          "command": "/ip/address/add",
+          "args": {
+            "address": "192.168.1.2/24",
+            "network": "192.168.1.0",
+            "broadcast": "192.168.1.255",
+            "interface": "WAN1"
+          },
+          "selector": null,
+          "line": 8
+        },
+        {
+          "command": "/ip/address/add",
+          "args": {
+            "address": "192.168.2.2/24",
+            "network": "192.168.2.0",
+            "broadcast": "192.168.2.255",
+            "interface": "WAN2"
+          },
+          "selector": null,
+          "line": 9
+        },
+        {
+          "command": "/ip/firewall/nat/add",
+          "args": {
+            "chain": "srcnat",
+            "out-interface": "WAN1",
+            "action": "masquerade"
+          },
+          "selector": null,
+          "line": 12
+        },
+        {
+          "command": "/ip/firewall/nat/add",
+          "args": {
+            "chain": "srcnat",
+            "out-interface": "WAN2",
+            "action": "masquerade"
+          },
+          "selector": null,
+          "line": 13
+        },
+        {
+          "command": "/ip/firewall/mangle/add",
+          "args": {
+            "chain": "input",
+            "in-interface": "WAN1",
+            "action": "mark-connection",
+            "new-connection-mark": "wan1_conn"
+          },
+          "selector": null,
+          "line": 16
+        },
+        {
+          "command": "/ip/firewall/mangle/add",
+          "args": {
+            "chain": "input",
+            "in-interface": "WAN2",
+            "action": "mark-connection",
+            "new-connection-mark": "wan2_conn"
+          },
+          "selector": null,
+          "line": 17
+        },
+        {
+          "command": "/ip/firewall/mangle/add",
+          "args": {
+            "chain": "output",
+            "connection-mark": "wan1_conn",
+            "action": "mark-routing",
+            "new-routing-mark": "to_wan1"
+          },
+          "selector": null,
+          "line": 18
+        },
+        {
+          "command": "/ip/firewall/mangle/add",
+          "args": {
+            "chain": "output",
+            "connection-mark": "wan2_conn",
+            "action": "mark-routing",
+            "new-routing-mark": "to_wan2"
+          },
+          "selector": null,
+          "line": 19
+        },
+        {
+          "command": "/ip/route/add",
+          "args": {
+            "dst-address": "0.0.0.0/0",
+            "gateway": "192.168.1.1,192.168.2.1,192.168.2.1",
+            "check-gateway": "ping"
+          },
+          "selector": null,
+          "line": 22
+        },
+        {
+          "command": "/ip/route/add",
+          "args": {
+            "dst-address": "0.0.0.0/0",
+            "distance": "1",
+            "gateway": "192.168.1.1",
+            "routing-mark": "to_wan1",
+            "check-gateway": "ping"
+          },
+          "selector": null,
+          "line": 23
+        },
+        {
+          "command": "/ip/route/add",
+          "args": {
+            "dst-address": "0.0.0.0/0",
+            "distance": "1",
+            "gateway": "192.168.2.1",
+            "routing-mark": "to_wan2",
+            "check-gateway": "ping"
+          },
+          "selector": null,
+          "line": 24
+        },
+        {
+          "command": "/ip/dns/set",
+          "args": {
+            "allow-remote-requests": "yes",
+            "servers": "8.8.8.8,8.8.4.4"
+          },
+          "selector": null,
+          "line": 27
+        },
+        {
+          "command": "/ip/pool/add",
+          "args": {
+            "name": "dhcp_pool_ECMP",
+            "ranges": "172.16.0.50-172.16.0.250"
+          },
+          "selector": null,
+          "line": 30
+        },
+        {
+          "command": "/ip/dhcp-server/add",
+          "args": {
+            "address-pool": "dhcp_pool_ECMP",
+            "disabled": "no",
+            "interface": "LAN",
+            "lease-time": "8h",
+            "name": "dhcp_ECMP"
+          },
+          "selector": null,
+          "line": 32
+        },
+        {
+          "command": "/ip/dhcp-server/network/add",
+          "args": {
+            "address": "172.16.0.0/24",
+            "dns-server": "172.16.0.1,8.8.8.8,8.8.4.4",
+            "gateway": "172.16.0.1"
+          },
+          "selector": null,
+          "line": 34
+        }
+      ],
+      "operations_hash": "a88a110c10a658c8887c7587dfcc8f74dcec04fcfa772240939086b8da146a9b"
+    },
+    "binding": {
+      "id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "technician": "technician-1",
+      "session_id": "adfa7b59-5f73-4456-b58f-f06d8fe92169",
+      "target": {
+        "router_id": "router-1",
+        "identity": "lab-router",
+        "management_interface": "ether14"
+      },
+      "parameters": {
+        "tipo": "ECMP",
+        "lineas": 2,
+        "lan": "172.16.0.1",
+        "dhcp": true,
+        "vel1": "5M",
+        "gw1": "192.168.1.1",
+        "ip1": 2,
+        "vel2": "10M",
+        "gw2": "192.168.2.1",
+        "ip2": 2
+      },
+      "variant": "legacy-v6-simulation-only",
+      "mode": "simulated",
+      "precheck_hash": "69926af9468df93a755dd8da66665c85f9d4f258a401f6a8e7842e2e9c9e74b7",
+      "generation_id": "37cd7de811e2dde685196d9bd654c093",
+      "generator_version": "ECMP-PHP-001/1.0.0",
+      "script_hash": "4252cfdf7fd0cd9dbd545cc28ad75319346490a100a77a4416d806e2ff89b811",
+      "adapter_version": "ecmp-native/1",
+      "operations_hash": "a88a110c10a658c8887c7587dfcc8f74dcec04fcfa772240939086b8da146a9b",
+      "plan_hash": "92d69878974352f74fa260a27f8d1e6a208f0dc0654642cbadc8ab15be4154ec"
+    },
+    "binding_hash": "f8a261d48dfe192438832dd401876a4bc502096944f9686f3b2ba91f4b24240d",
+    "analysis_source": "ai",
+    "final_response": {
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "status": "rejected",
+      "summary": "Operacion rechazada por el tecnico; sin autorizacion de escritura.",
+      "analysis": {
+        "assessment": "not_executed",
+        "problem_resolved": false,
+        "requires_human_intervention": false,
+        "next_step": "submit_new_request"
+      },
+      "analysis_source": "ai",
+      "successful_actions": [
+        "get_ecmp_precheck"
+      ],
+      "failed_actions": [],
+      "unverified_checks": [
+        "WAN traffic",
+        "LAN connectivity"
+      ],
+      "error_codes": []
+    }
+  },
+  "audit": [
+    {
+      "seq": 2,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139022.7553241,
+      "actor": "workflow",
+      "event": "{\"actions\": [], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"received\", \"node\": \"classify\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"classified\"}"
+    },
+    {
+      "seq": 3,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139022.7553241,
+      "actor": "workflow",
+      "event": "{\"actions\": [], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"classified\", \"node\": \"generate_plan\", \"proposed_actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"rejected_actions\": [], \"status\": \"plan_proposed\"}"
+    },
+    {
+      "seq": 4,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139022.7553241,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"plan_proposed\", \"node\": \"validate_plan\", \"proposed_actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"rejected_actions\": [], \"status\": \"parameters_ready\"}"
+    },
+    {
+      "seq": 5,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139022.7553241,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"parameters_ready\", \"node\": \"parameters\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"await_precheck\"}"
+    },
+    {
+      "seq": 6,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139022.7553241,
+      "actor": "workflow",
+      "event": "await_precheck"
+    },
+    {
+      "seq": 7,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.7266915,
+      "actor": "agent",
+      "event": "task_delivered"
+    },
+    {
+      "seq": 8,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.7340593,
+      "actor": "agent",
+      "event": "{\"action\": \"get_ecmp_precheck\", \"error\": null, \"result\": \"ok\"}"
+    },
+    {
+      "seq": 9,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.786098,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"precheck_received\", \"node\": \"compatibility\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"compatible\"}"
+    },
+    {
+      "seq": 10,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.786098,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"compatible\", \"node\": \"artifact\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"artifact_received\"}"
+    },
+    {
+      "seq": 11,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.786098,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"artifact_received\", \"node\": \"validate\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"await_approval\"}"
+    },
+    {
+      "seq": 12,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.786098,
+      "actor": "workflow",
+      "event": "await_approval"
+    },
+    {
+      "seq": 13,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.8045897,
+      "actor": "technician-1",
+      "event": "reject"
+    },
+    {
+      "seq": 14,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.8045897,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"rejected\", \"node\": \"analyze_results\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"rejected\"}"
+    },
+    {
+      "seq": 15,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.8045897,
+      "actor": "workflow",
+      "event": "{\"actions\": [\"get_ecmp_precheck\", \"apply_approved_ecmp\", \"verify_ecmp\"], \"classification\": \"ECMP\", \"error\": null, \"error_codes\": [], \"from_status\": \"rejected\", \"node\": \"generate_final_response\", \"proposed_actions\": [], \"rejected_actions\": [], \"status\": \"rejected\"}"
+    },
+    {
+      "seq": 16,
+      "request_id": "993b9736-5cf4-4559-ba0d-0cf84c05e653",
+      "at": 1791139024.8045897,
+      "actor": "workflow",
+      "event": "rejected"
+    }
+  ],
+  "limitations": [
+    "Sin certificacion ECMP en RouterOS real.",
+    "Trafico WAN y conectividad LAN no verificados."
+  ]
+}

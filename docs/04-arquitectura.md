@@ -15,7 +15,7 @@ El sistema estará compuesto inicialmente por los siguientes componentes:
 3. Base de conocimiento.
 4. Aplicación existente de generación de scripts.
 5. Agente local.
-6. WinBox.
+6. Cliente de la API de RouterOS.
 7. MikroTik del cliente.
 8. Sistema de registro y auditoría.
 9. Mecanismo de aprobación humana.
@@ -61,7 +61,7 @@ El sistema estará compuesto inicialmente por los siguientes componentes:
                 └────────┬────────┘
                          │
                          ↓
-                      WinBox
+              RouterOS API (`api-ssl`)
                          │
                          ↓
                 ┌─────────────────┐
@@ -151,17 +151,20 @@ A partir de estos datos genera el script correspondiente.
 
 Esta aplicación formará parte del ecosistema del proyecto.
 
-La forma exacta de integración con ella será definida posteriormente.
+Será la fuente autorizada del script ECMP durante el MVP. El nuevo sistema proporcionará los parámetros validados, recibirá el artefacto generado y comprobará su versión, familia de RouterOS e integridad antes de entregarlo al agente.
+
+El comportamiento actual y el contrato de integración requerido se describen en el [inventario inicial de scripts ECMP](11-inventario-scripts-ecmp.md).
 
 ## 8. Agente local
 
 El agente local será el componente encargado de ejecutar acciones sobre el equipo Windows utilizado durante el soporte.
 
+Para el MVP se distribuirá como una aplicación portátil, iniciada manualmente y sin instalación permanente. Su modalidad se define en [Modalidad de ejecución del agente](10-modalidad-agente.md).
+
 Entre sus responsabilidades estarán:
 
-* Abrir aplicaciones.
-* Interactuar con WinBox.
-* Establecer la conexión con el MikroTik.
+* Establecer una conexión segura con la API de RouterOS.
+* Autenticarse mediante una cuenta de servicio autorizada.
 * Obtener información.
 * Ejecutar procedimientos autorizados.
 * Ejecutar scripts autorizados.
@@ -181,13 +184,13 @@ La arquitectura deberá considerar esta dependencia.
 
 La integración automática con AnyDesk no forma parte todavía de una decisión técnica definitiva.
 
-## 10. WinBox
+## 10. Canal de comunicación con MikroTik
 
-WinBox es actualmente la herramienta utilizada para administrar los equipos MikroTik desde Windows.
+El agente utilizará la API nativa de RouterOS como canal principal para interactuar con el router. En operación se utilizará preferentemente `api-ssl` sobre TCP 8729, con validación del certificado TLS.
 
-Dentro del flujo inicial será el medio mediante el cual el agente podrá interactuar con el router.
+WinBox seguirá disponible como herramienta manual para la preparación inicial, el diagnóstico y la contingencia, pero no será automatizado como parte del MVP.
 
-La forma exacta de automatizar WinBox deberá determinarse durante el diseño técnico.
+La decisión y sus controles se detallan en [Selección del canal de comunicación con MikroTik](09-canal-comunicacion-mikrotik.md).
 
 ## 11. MikroTik
 
@@ -285,8 +288,8 @@ Todavía no se han definido:
 * Protocolo de comunicación entre componentes.
 * Arquitectura del agente.
 * Método de integración con la aplicación generadora.
-* Método de automatización de WinBox.
-* Método de comunicación con MikroTik.
+* Biblioteca cliente de la API de RouterOS.
+* Esquema de certificados y aprovisionamiento de cuentas de servicio.
 * Sistema de autenticación.
 * Sistema de permisos.
 * Infraestructura de despliegue.
