@@ -14,4 +14,4 @@ asistir y automatizar tareas de soporte técnico sobre MikroTik.
 - Mis avances en el desarrollo.
 - Dificultades y soluciones.
 - Lo que voy aprendiendo.
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTKNb4ImPmhWYnuAsHCnmGAn4tHCH6yxBCNGsLW6KG9g&s=10" alt="Imagen descriptiva de mi trabajo" height=200>
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTKNb4ImPmhWYnuAsHCnmGAn4tHCH6yxBCNGsLW6KG9g&s=10" alt="Imagen descriptiva de mi trabajo" height=200 width=300 align=right>
